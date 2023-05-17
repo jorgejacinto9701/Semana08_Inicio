@@ -109,7 +109,7 @@ public class MySqlEmpleadoDAO implements EmpleadoDAO{
 			
 			String sql = "SELECT e.*, p.nombre FROM empleado e "
 					+ "inner join pais p on e.idPais = p.idPais "
-					+ "where p.nombre like ?";
+					+ "where e.nombres like ?";
 			pstm = conn.prepareStatement(sql);
 			pstm.setString(1, filtro);
 
@@ -211,7 +211,7 @@ public class MySqlEmpleadoDAO implements EmpleadoDAO{
 			
 			String sql = "SELECT e.*, p.nombre FROM empleado e "
 					+ "inner join pais p on e.idPais = p.idPais "
-					+ "where p.idEmpleado = ?";
+					+ "where e.idEmpleado = ?";
 			pstm = conn.prepareStatement(sql);
 			pstm.setInt(1, idEmpleado);
 

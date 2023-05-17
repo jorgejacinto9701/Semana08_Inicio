@@ -32,10 +32,10 @@
 				<input	class="form-control" type="text" id="id_filtro" placeholder="Ingrese el nombre">
 			</div>	
 			<div class="col-md-1">
-				<button type="button" class="btn btn-primary" id="id_btn_filtro">Filtro</button>
-			</div>
+				<button type="button" class="btn btn-primary" id="id_btn_filtro">Filtra</button>
+			</div>	
 			<div class="col-md-1">
-				<button type="button" class="btn btn-primary" data-toggle='modal' data-target="#id_div_modal_registra">Registra</button>
+				<button type="button" class="btn btn-primary"  data-toggle='modal' data-target="#id_div_modal_registra" >Registra</button>
 			</div>	
 		</div>
 
@@ -47,6 +47,7 @@
 						<th>Código</th>
 						<th>Nombre</th>
 						<th>DNI</th>
+						<th>Estado</th>
 						<th>Categoría</th>
 						<th></th>
 						<th></th>
@@ -58,7 +59,6 @@
 
 				</tbody>
 			</table>
-
 		</div>
 		
 		<!-- INICIO MODAL DE REGISTRO -->
@@ -98,8 +98,8 @@
 		                                    </div> 	 
 		                                    <div class="form-group">
 		                                        <div class="col-lg-12" align="center">
-		                                        	<button type="button" style="width: 80px" id="id_btn_registra" class="btn btn-primary btn-sm">Registrar</button>
-		                                        	<button type="button" style="width: 80px" id="id_btn_reg_cancelar" class="btn btn-primary btn-sm" data-dismiss="modal">Cancelar</button>
+		                                        	<button type="button" style="width: 80px" id="id_btn_registra" class="btn btn-primary btn-sm">Registra</button>
+		                                        	<button type="button" style="width: 80px" id="id_btn_reg_cancelar" class="btn btn-primary btn-sm" data-dismiss="modal">Cancela</button>
 		                                        </div>
 		                                    </div>   
 			                             </div>
@@ -127,7 +127,7 @@
 			                   		<div id="stepOne" class="panel-collapse collapse in">
 			                   			<form id="id_form_actualiza">
 			                   			<input type="hidden" name="metodo" value="actualiza">
-			                   			<input type="hidden" name="id" >
+			                   			<input type="hidden" name="idCliente" id="idCliente">
 			                   			<div class="panel-body">
 			                                <div class="form-group" >
 		                                        <label class="col-lg-3 control-label" for="id_act_nombre">Nombre</label>
@@ -144,7 +144,7 @@
 		                                    <div class="form-group">
 		                                        <label class="col-lg-3 control-label" for="id_act_estado">Estado</label>
 		                                        <div class="col-lg-8">
-													<select class="form-control" id="id_act_estado" name="categoria">
+													<select class="form-control" id="id_act_estado" name="estado">
 														<option value=" ">[Seleccione]</option>
 														<option value="1">Activo</option>
 														<option value="0">Inactivo</option>
@@ -161,8 +161,8 @@
 		                                    </div> 	 
 		                                    <div class="form-group">
 		                                        <div class="col-lg-12" align="center">
-		                                        	<button type="button" style="width: 80px" id="id_btn_actualiza" class="btn btn-primary btn-sm">Registrar</button>
-		                                        	<button type="button" style="width: 80px" id="id_btn_act_cancelar" class="btn btn-primary btn-sm" data-dismiss="modal">Cancelar</button>
+		                                        	<button type="button" style="width: 80px" id="id_btn_actualiza" class="btn btn-primary btn-sm">Actualiza</button>
+		                                        	<button type="button" style="width: 80px" id="id_btn_act_cancelar" class="btn btn-primary btn-sm" data-dismiss="modal">Cancela</button>
 		                                        </div>
 		                                    </div>   
 			                             </div>
@@ -176,14 +176,13 @@
 		</div>	
 		<!-- FIN MODAL DE ACTUALIZA -->
 		
-		 
 	</div>
 
 
 	<script type="text/javascript">
 		$("#id_btn_filtro").click(function() {
 			var vfiltro = $("#id_filtro").val();
-			$.getJSON("crudCliente", {"metodo": "lista","filtro":vfiltro}, function(data) {
+			$.getJSON("crudCliente", {"metodo":"lista","filtro":vfiltro}, function(data) {
 				agregarGrilla(data);
 			});
 		});
@@ -208,75 +207,234 @@
 						{data: "idCliente",className:'text-center'},
 						{data: "nombre",className:'text-center'},
 						{data: "dni",className:'text-center'},
+						{data: function(row, type, val, meta){
+							return row.estado == 1 ? "Activo" : "Inactivo";  
+						},className:'text-center'},
 						{data: "categoria.nombre",className:'text-center'},
 						{data: function(row, type, val, meta){
-							return '<button type="button" style="width: 90px" class="btn btn-info btn-sm" onClick="verFormularioActualiza(\''+row.idCliente + '\',\''+ row.nombre + '\',\''+ row.dni + '\',\''+ row.estado + '\',\''+ row.categoria.idCategoria +'\');">Editar</button>';
-						} ,className:'text-center'},
+							return '<button type="button" class="btn btn-info btn-sm" onClick="verFormularioActualiza(\'' + row.idCliente + '\',\'' +  row.nombre   + '\',\'' +  row.dni + '\',\'' +  row.estado + '\',\'' +  row.categoria.idCategoria +'\');">Editar</button>';  
+						},className:'text-center'},
 						{data: function(row, type, val, meta){
-							return '<button type="button" style="width: 90px" class="btn btn-success btn-sm">Activo</button>';
-						} ,className:'text-center'},
+							return '<button type="button" class="btn btn-warning btn-sm" onClick="eliminacionLogica(\'' + row.idCliente +'\');" >E.Lógica</button>';
+						},className:'text-center'},
 						{data: function(row, type, val, meta){
-							return '<button type="button" style="width: 90px" class="btn btn-danger btn-sm" onClick="eliminacionFisica(\''+ row.idCliente +'\');" >Elimina</button>';
-						} ,className:'text-center'},
+							return '<button type="button" class="btn btn-danger btn-sm"  onClick="eliminacionFisica(\'' + row.idCliente +'\');" >E.Física</button>';
+						},className:'text-center'},
 					]                                     
 			    });
 		}
 		
-		
-		function eliminacionFisica(idCliente){
-			 $.ajax({
-		          type: "POST",
-		          url: "crudCliente", 
-		          data: {"metodo": "eFisica", "idCliente":idCliente},
-		          success: function(data){
- 		        	  mostrarMensaje(data.mensaje);
- 		        	  agregarGrilla(data.datos);
-		          },
-		          error: function(){
-		        	  mostrarMensaje(MSG_ERROR);
-		          }
-		        });
-		}
-		
-		function verFormularioActualiza(idCliente, nombre, dni, estado, idCategoria){
-			console.log(">>> verFormularioActualiza");
+		function verFormularioActualiza(idCliente, nombre, dni, estado, categoria){
+			console.log(">> verFormularioActualiza >> " + idCliente);
 			$("#id_div_modal_actualiza").modal("show");
-			$("#id").val(idCliente);
+			$("#idCliente").val(idCliente);
 			$("#id_act_nombre").val(nombre);
 			$("#id_act_dni").val(dni);
 			$("#id_act_estado").val(estado);
-			$("#id_act_categoria").val(idCategoria);
+			$("#id_act_categoria").val(categoria);
 		}
 		
-		$.getJSON("cargaCategoria", {}, function (data){
+		$.getJSON("cargaCategoria",{}, function (data){
 			$.each(data, function(index, item){
-				$("#id_reg_categoria").append("<option value=" +  item.idCategoria +" >" +  item.nombre+ "</option>");
-				$("#id_act_categoria").append("<option value=" +  item.idCategoria +" >" +  item.nombre+ "</option>");
-			});	
-		});	
+				$("#id_reg_categoria").append("<option value='"+ item.idCategoria +"'>"+ item.nombre+"</option>");
+				$("#id_act_categoria").append("<option value='"+ item.idCategoria +"'>"+ item.nombre+"</option>");
+			})
+		});
+		
+		function eliminacionFisica(idCliente){	
+			var array = [idCliente];
+			mostrarMensajeConfirmacion(MSG_ELIMINAR, accionEliminacionFisica,null,array);
+		}
 
-		$("#id_btn_registra").click(function(){
-	        $.ajax({
+		function accionEliminacionFisica(array){
+			 $.ajax({
 		          type: "POST",
 		          url: "crudCliente", 
-		          data: $('#id_form_registra').serialize(),
+		          data: {"metodo":"eFisica", "idCliente":array[0]},
 		          success: function(data){
 		        	  mostrarMensaje(data.mensaje);
- 		        	  agregarGrilla(data.datos);
+		        	  agregarGrilla(data.datos);
 		          },
 		          error: function(){
 		        	  mostrarMensaje(MSG_ERROR);
 		          }
-	        });
-		});		        
+		    });
+		}
+		
+		$("#id_btn_registra").click(function() {
+			var validator = $('#id_form_registra').data('bootstrapValidator');
+		    validator.validate();
+			
+		    if (validator.isValid()) {
+		        $.ajax({
+			          type: "POST",
+			          url: "crudCliente", 
+			          data: $('#id_form_registra').serialize(),
+			          success: function(data){
+			        	  mostrarMensaje(data.mensaje);
+			        	  agregarGrilla(data.datos);
+			        	  validator.resetForm();
+			        	  $('#id_div_modal_registra').modal("hide");
+			          },
+			          error: function(){
+			        	  mostrarMensaje(MSG_ERROR);
+			          }
+			    });
+		    }
+		});
+		
+		$("#id_btn_actualiza").click(function() {
+			var validator = $('#id_form_actualiza').data('bootstrapValidator');
+		    validator.validate();
+			
+		    if (validator.isValid()) {
+		        $.ajax({
+			          type: "POST",
+			          url: "crudCliente", 
+			          data: $('#id_form_actualiza').serialize(),
+			          success: function(data){
+			        	  mostrarMensaje(data.mensaje);
+			        	  agregarGrilla(data.datos);
+			        	  validator.resetForm();
+			        	  $('#id_div_modal_actualiza').modal("hide");
+			          },
+			          error: function(){
+			        	  mostrarMensaje(MSG_ERROR);
+			          }
+			    });
+		    }
+		});
+		
+		
+		function eliminacionLogica(idCliente){
+			 $.ajax({
+		          type: "POST",
+		          url: "crudCliente", 
+		          data: {"metodo":"eLogica", "idCliente":idCliente},
+		          success: function(data){
+		        	  agregarGrilla(data.datos);
+		          },
+		          error: function(){
+		        	  mostrarMensaje(MSG_ERROR);
+		          }
+		    });
+		}
+		
+		$(document).ready(function() {
+		    $('#id_form_registra').bootstrapValidator({
+		        message: 'This value is not valid',
+		        feedbackIcons: {
+		            valid: 'glyphicon glyphicon-ok',
+		            invalid: 'glyphicon glyphicon-remove',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        
+		        fields:{
+		        	nombre : {  
+		        		selector: "#id_reg_nombre",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'El nombre es requerido'
+		                    },
+		                    stringLength: {
+		                        min: 3,
+		                        max: 30,
+		                        message: 'El nombre tiene de 3 a 30 caracteres'
+		                    },
+		        		}
+		        	},
+		        	dni : {
+		        		selector: "#id_reg_dni",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'El dni es requerido'
+		                    },
+		                    regexp: {
+		                        regexp: /^[0-9]{8}$/,
+		                        message: 'El dni tiene 8 dígitos'
+		                    },
+		        		}
+		        	},
+		        	categoria : {
+		        		selector: "#id_reg_categoria",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'La categoría es requerida'
+		                    },
+		        		}
+		        	},        	
+		        }
+		    });
+		});
+		
+		$(document).ready(function() {
+		    $('#id_form_actualiza').bootstrapValidator({
+		        message: 'This value is not valid',
+		        feedbackIcons: {
+		            valid: 'glyphicon glyphicon-ok',
+		            invalid: 'glyphicon glyphicon-remove',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        
+		        fields:{
+		        	nombre : {  
+		        		selector: "#id_act_nombre",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'El nombre es requerido'
+		                    },
+		                    stringLength: {
+		                        min: 3,
+		                        max: 30,
+		                        message: 'El nombre tiene de 3 a 30 caracteres'
+		                    },
+		        		}
+		        	},
+		        	dni : {
+		        		selector: "#id_act_dni",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'El dni es requerido'
+		                    },
+		                    regexp: {
+		                        regexp: /^[0-9]{8}$/,
+		                        message: 'El dni tiene 8 dígitos'
+		                    },
+		        		}
+		        	},
+		        	estado : {
+		        		selector: "#id_act_estado",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'El estado es requerido'
+		                    },
+		        		}
+		        	},     
+		        	categoria : {
+		        		selector: "#id_act_categoria",
+		        		validators : {
+		        			notEmpty: {
+		                        message: 'La categoría es requerida'
+		                    },
+		        		}
+		        	},        	
+		        }
+		    });
+		});		
+		
+		function limpiarFormulario(){	
+			$('#id_reg_nombre').val("");
+			$('#id_reg_dni').val("");
+			$('#id_reg_categoria').val(" ");
+			$('#id_act_nombre').val("");
+			$('#id_act_dni').val("");
+			$('#id_act_categoria').val(" ");
+			$('#id_act_estado').val(" ");
+		}
 	</script>
-	
+
 </body>
 </html>
-
-
-
-
 
 
 
